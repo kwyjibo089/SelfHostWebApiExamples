@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.WindowsServices;
+using Microsoft.Extensions.DependencyInjection;
+using SelfHostApi.Services;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -13,7 +15,12 @@ namespace SelfHostApi
         public static void Main(string[] args)
         {
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
-            var builder = CreateWebHostBuilder(args.Where(arg => arg != "--console").ToArray());
+            var builder = 
+                CreateWebHostBuilder(args.Where(arg => arg != "--console").ToArray())
+               .ConfigureServices((hostContext, services) =>
+               {
+                   services.AddHostedService<FileWriterService>();
+               });
 
             if (isService)
             {
